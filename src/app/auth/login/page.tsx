@@ -3,11 +3,20 @@ import InputComponent from "@/components/inputComponent";
 import { IFormInput } from "@/types/auth";
 import { inputsDataLogin } from "@/utils/inputsData";
 import { useForm } from "react-hook-form";
-import { signIn } from "next-auth/react";
+import { getSession, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function LoginPage() {
+  useEffect(() => {
+    const checkSession = async () => {
+      const session = await getSession();
+      if (session?.user) {
+        router.push("/dashboard");
+      }
+    };
+    checkSession();
+  }, []);
   const [error, setError] = useState<string>("");
   const router = useRouter();
   const {
@@ -21,9 +30,9 @@ function LoginPage() {
       password: data.password,
       redirect: false,
     });
-    if(response?.error){
+    if (response?.error) {
       setError(response.error);
-    }else if (response?.error === null){
+    } else if (response?.error === null) {
       router.push("/dashboard");
       router.refresh();
     }
@@ -36,11 +45,11 @@ function LoginPage() {
         onSubmit={onSubmit}
         className="flex flex-col justify-center items-center gap-6 min-h-screen"
       >
-        {
-          error && (
-            <span className="bg-red-500 text-sm p-3 w-full rounded-lg">{error}</span>
-          )
-        }
+        {error && (
+          <span className="bg-red-500 text-sm p-3 w-full rounded-lg">
+            {error}
+          </span>
+        )}
         <h1 className="text-slate-200 font-bold mb-4 text-4xl">
           Iniciar sesión
         </h1>

@@ -1,14 +1,25 @@
 "use client";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import InputComponent from "@/components/inputComponent";
 import { IFormInput } from "@/types/auth";
 import { inputsDataRegister } from "@/utils/inputsData";
+import { getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 function RegisterPage() {
+  useEffect(() => {
+    const checkSession = async () => {
+      const session = await getSession();
+      if (session?.user) {
+        router.push("/dashboard");
+      }
+    };
+    checkSession();
+  }, []);
 
   const router = useRouter();
-
   const {
     register,
     handleSubmit,
@@ -35,7 +46,7 @@ function RegisterPage() {
     //console.log(resJSON);
     if (res.ok) {
       //router.push('/auth/login');
-      router.push('/api/auth/signin')
+      router.push("/api/auth/signin");
     }
   });
   return (
